@@ -15,6 +15,7 @@ import "./App.css";
 import {
   Account,
   Contract,
+  ContractsDebug,
   Faucet,
   GasGauge,
   Header,
@@ -23,6 +24,7 @@ import {
   NetworkDisplay,
   FaucetHint,
   NetworkSwitch,
+  SlideOutDebug,
 } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 import externalContracts from "./contracts/external_contracts";
@@ -200,6 +202,7 @@ function App(props) {
       console.log("🌍 DAI contract on mainnet:", mainnetContracts);
       console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
       console.log("🔐 writeContracts", writeContracts);
+      console.log("contract config ", contractConfig );
     }
   }, [
     mainnetProvider,
@@ -241,6 +244,34 @@ function App(props) {
       loadWeb3Modal();
     }
   }, [loadWeb3Modal]);
+
+  //start adding code for slide-out debug div)
+  const [stateActiveClass, setStateActiveClass] = useState("") ;
+  //inactive the debug slide-out when load the app
+  useEffect( () => {
+    setStateActiveClass("");
+  }, []);
+
+  // function TestContracts (props) {
+  //     const contractsQty =  (
+  //       <div> 
+  //         {props.readContracts.values.map( contract => {
+  //             <Contract   
+  //             name={contract.name}
+  //             price={price}
+  //             signer={userSigner}
+  //             provider={localProvider}
+  //             address={address}
+  //             blockExplorer={blockExplorer}
+  //             contractConfig={contractConfig}
+  //           />} )}
+  //         </div>
+  //       );
+  //       return ({contractsQty});        
+  //   }
+  
+
+  // var [activeClass, setActiveClass] = useState();
 
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
 
@@ -307,10 +338,43 @@ function App(props) {
         </Menu.Item>
       </Menu>
 
+    
+
       <Switch>
         <Route exact path="/">
           {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
+          <Button 
+              className="debug-button"
+              onClick={() => {
+                setStateActiveClass ( stateActiveClass === "" ? "active" : "") ;
+                console.log(stateActiveClass);                             
+              }}
+              size="large"
+              shape="round"
+            >
+          <span style={{ marginRight: 8 }} role="img" aria-label="debug">
+          ◀️
+          </span>
+          <span>Debug</span>
+          </Button>
+          <div style={{display:"inline-flex", justifyContent: "center", width:"100%"}}>
           <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
+            {/* ************************************* add  slide-out debug here ********************************************************************************/}
+      <div className={`slide-out ${stateActiveClass}`}>
+ 
+       <ContractsDebug 
+        name="YourContract"
+        price={price}
+        signer={userSigner}
+        provider={localProvider}
+        address={address}
+        blockExplorer={blockExplorer}
+        contractConfig={contractConfig}
+        readContracts={readContracts}
+        location={location}
+       />
+         </div></div>
+      {/* **************************************************************************end of debug ************************************/}
         </Route>
         <Route exact path="/debug">
           {/*

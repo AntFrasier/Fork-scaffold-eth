@@ -2,3 +2,39 @@
   text-align: center;
   padding-left: calc(100vw - 100%);
 }
+
+.slide-out{
+  float: right;
+  max-width: 50%;
+  transform: scaleX(0);
+  overflow: hidden;
+  width: 0;
+  transition: all 500ms ease-in-out;
+  transition-delay: all 1500ms ease;
+  transform-origin: right;
+}
+
+.slide-out.active{
+  width:35%;
+  transform: scaleX(1);
+  transform-origin: right;
+  border: 1px solid rgb(240, 240, 240);
+}
+
+.debug-button{
+
+  float: right;
+  overflow: hidden;
+  display: inline-flex;
+}
+
+.debug-button > span:last-child{
+  background-color: red;
+  transform: scaleX(0);
+  width:0;
+}
+
+.debug-button:hover + span:last-child {
+  transform: scaleX(1);
+  width: 100%;
+}
