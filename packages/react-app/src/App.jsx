@@ -10,7 +10,7 @@ import {
 } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, Route, Switch, useLocation } from "react-router-dom";
+import { Link, Route, Switch, useLocation, Redirect } from "react-router-dom";
 import "./App.css";
 import {
   Account,
@@ -24,7 +24,7 @@ import {
   NetworkDisplay,
   FaucetHint,
   NetworkSwitch,
-  SlideOutDebug,
+
 } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 import externalContracts from "./contracts/external_contracts";
@@ -58,7 +58,7 @@ const { ethers } = require("ethers");
 const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
-const DEBUG = true;
+const DEBUG = false;
 const NETWORKCHECK = true;
 const USE_BURNER_WALLET = true; // toggle burner wallet feature
 const USE_NETWORK_SELECTOR = false;
@@ -248,9 +248,9 @@ function App(props) {
   //start adding code for slide-out debug div)
   const [stateActiveClass, setStateActiveClass] = useState("") ;
   //inactive the debug slide-out when load the app
-  useEffect( () => {
-    setStateActiveClass("");
-  }, []);
+  // useEffect( () => {
+  //   setStateActiveClass("");
+  // }, []);
 
   // function TestContracts (props) {
   //     const contractsQty =  (
@@ -318,8 +318,8 @@ function App(props) {
         USE_NETWORK_SELECTOR={USE_NETWORK_SELECTOR}
       />
       <Menu style={{ textAlign: "center", marginTop: 20 }} selectedKeys={[location.pathname]} mode="horizontal">
-        <Menu.Item key="/">
-          <Link to="/">App Home</Link>
+        <Menu.Item key="/home">
+          <Link to="/home">App Home</Link>
         </Menu.Item>
         <Menu.Item key="/debug">
           <Link to="/debug">Debug Contracts</Link>
@@ -341,29 +341,30 @@ function App(props) {
     
 
       <Switch>
-        <Route exact path="/">
+        {/* <Route exact path="/"> */}
+          <Route exact path="/">
+                  <Redirect to="/home" /> 
+                  </Route>
+                     
+          <Route path="/home">
           {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
-          <Button 
-              className="debug-button"
-              onClick={() => {
-                setStateActiveClass ( stateActiveClass === "" ? "active" : "") ;
-                console.log(stateActiveClass);                             
-              }}
-              size="large"
-              shape="round"
-            >
-          <span style={{ marginRight: 8 }} role="img" aria-label="debug">
-          ◀️
-          </span>
-          <span>Debug</span>
-          </Button>
+          
           <div style={{display:"inline-flex", justifyContent: "center", width:"100%"}}>
           <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
             {/* ************************************* add  slide-out debug here ********************************************************************************/}
-      <div className={`slide-out ${stateActiveClass}`}>
- 
+     
+            {/* <Contract
+            name="YourContract"
+            price={price}
+            signer={userSigner}
+            provider={localProvider}
+            address={address}
+            blockExplorer={blockExplorer}
+            contractC
+            onfig={contractConfig}
+          />  */}
+      
        <ContractsDebug 
-        name="YourContract"
         price={price}
         signer={userSigner}
         provider={localProvider}
@@ -371,12 +372,13 @@ function App(props) {
         blockExplorer={blockExplorer}
         contractConfig={contractConfig}
         readContracts={readContracts}
-        location={location}
+       
        />
-         </div></div>
+         </div>
       {/* **************************************************************************end of debug ************************************/}
         </Route>
-        <Route exact path="/debug">
+        <Route path="/debug">
+        
           {/*
                 🎛 this scaffolding is full of commonly used components
                 this <Contract/> component will automatically parse your ABI
