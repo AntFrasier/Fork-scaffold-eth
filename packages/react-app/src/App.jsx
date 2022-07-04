@@ -1,4 +1,4 @@
-import { Button, Col, Menu, Row } from "antd";
+import { Button, Col, Menu, Row, Drawer } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -15,7 +15,6 @@ import "./App.css";
 import {
   Account,
   Contract,
-  ContractsDebug,
   Faucet,
   GasGauge,
   Header,
@@ -58,7 +57,7 @@ const { ethers } = require("ethers");
 const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
-const DEBUG = false;
+const DEBUG = true;
 const NETWORKCHECK = true;
 const USE_BURNER_WALLET = true; // toggle burner wallet feature
 const USE_NETWORK_SELECTOR = false;
@@ -167,6 +166,7 @@ function App(props) {
   const myMainnetDAIBalance = useContractReader(mainnetContracts, "DAI", "balanceOf", [
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
+  
 
   // keep track of a variable from the contract in the local React state:
   const purpose = useContractReader(readContracts, "YourContract", "purpose");
@@ -275,6 +275,25 @@ function App(props) {
 
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
 
+  const [debugContractToShow, setDebugContractToShow] = useState('');
+
+  const contractsToShow = Object.keys(readContracts).map ( (_contractName) => {
+    if (!debugContractToShow) setDebugContractToShow(_contractName) //if there as been no click show the last contract that've been deployed
+    return(
+      <Menu.Item key={`${_contractName}`}>
+     <Link  onClick={ () => { setDebugContractToShow(_contractName)}}>{_contractName}</Link>
+     </Menu.Item>
+        );
+      }); 
+    const [visible, setVisible] = useState(false);
+    const showDrawer = () => {
+        setVisible(true);
+      };
+    
+    const onClose = () => {
+        setVisible(false);
+      };
+
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
@@ -360,11 +379,34 @@ function App(props) {
             provider={localProvider}
             address={address}
             blockExplorer={blockExplorer}
-            contractC
-            onfig={contractConfig}
+            contractConfig={contractConfig}
           />  */}
-      
-       <ContractsDebug 
+        <Button type="primary" onClick={showDrawer}>
+          Debug Contracts
+        </Button>
+        <Drawer
+        title="Debug"
+        placement="right"
+        closable={true}
+        onClose={onClose}
+        visible={visible}
+        key="right">
+         
+       <Menu selectedKeys={debugContractToShow} mode="horizontal">   
+       
+      {contractsToShow}
+      </Menu>
+      <Contract
+            name={debugContractToShow}
+            price={price}
+            signer={userSigner}
+            provider={localProvider}
+            address={address}
+            blockExplorer={blockExplorer}
+            contractConfig={contractConfig}
+          /> 
+          </Drawer>
+       {/* <ContractsDebug 
         price={price}
         signer={userSigner}
         provider={localProvider}
@@ -373,7 +415,7 @@ function App(props) {
         contractConfig={contractConfig}
         readContracts={readContracts}
        
-       />
+       /> */}
          </div>
       {/* **************************************************************************end of debug ************************************/}
         </Route>
@@ -384,8 +426,19 @@ function App(props) {
                 this <Contract/> component will automatically parse your ABI
                 and give you a form to interact with it locally
             */}
-
+            <Menu style={{ textAlign: "center", marginTop: 20 }} selectedKeys={debugContractToShow} mode="horizontal">   
+      {contractsToShow}
+      </Menu>
           <Contract
+            name={debugContractToShow}
+            price={price}
+            signer={userSigner}
+            provider={localProvider}
+            address={address}
+            blockExplorer={blockExplorer}
+            contractConfig={contractConfig}
+          /> 
+          {/* <Contract
             name="YourContract"
             price={price}
             signer={userSigner}
@@ -393,7 +446,7 @@ function App(props) {
             address={address}
             blockExplorer={blockExplorer}
             contractConfig={contractConfig}
-          />
+          /> */}
         </Route>
         <Route path="/hints">
           <Hints
