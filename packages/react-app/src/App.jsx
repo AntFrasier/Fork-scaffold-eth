@@ -275,6 +275,8 @@ function App(props) {
 
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
 
+
+  //adding slide out debug states 
   const [debugContractToShow, setDebugContractToShow] = useState('');
 
   const contractsToShow = Object.keys(readContracts).map ( (_contractName) => {
@@ -293,6 +295,7 @@ function App(props) {
     const onClose = () => {
         setVisible(false);
       };
+//end of slide out states
 
   return (
     <div className="App">
@@ -370,54 +373,34 @@ function App(props) {
           
           <div style={{display:"inline-flex", justifyContent: "center", width:"100%"}}>
           <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
-            {/* ************************************* add  slide-out debug here ********************************************************************************/}
-     
-            {/* <Contract
-            name="YourContract"
-            price={price}
-            signer={userSigner}
-            provider={localProvider}
-            address={address}
-            blockExplorer={blockExplorer}
-            contractConfig={contractConfig}
-          />  */}
-        <Button type="primary" onClick={showDrawer}>
+          {/* ************************************* add  slide-out debug here ********************************************************************************/}
+          <Button type="primary" onClick={showDrawer}>
           Debug Contracts
-        </Button>
-        <Drawer
-        title="Debug"
-        placement="right"
-        closable={true}
-        onClose={onClose}
-        visible={visible}
-        key="right">
-         
-       <Menu selectedKeys={debugContractToShow} mode="horizontal">   
-       
-      {contractsToShow}
-      </Menu>
-      <Contract
-            name={debugContractToShow}
-            price={price}
-            signer={userSigner}
-            provider={localProvider}
-            address={address}
-            blockExplorer={blockExplorer}
-            contractConfig={contractConfig}
-          /> 
+          </Button>
+          <Drawer
+          title="Debug"
+          placement="right"
+          closable={true}
+          onClose={onClose}
+          visible={visible}
+          key="right">
+          
+        <Menu selectedKeys={debugContractToShow} mode="horizontal">   
+        
+        {contractsToShow}
+        </Menu>
+        <Contract
+              name={debugContractToShow}
+              price={price}
+              signer={userSigner}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+              contractConfig={contractConfig}
+            /> 
           </Drawer>
-       {/* <ContractsDebug 
-        price={price}
-        signer={userSigner}
-        provider={localProvider}
-        address={address}
-        blockExplorer={blockExplorer}
-        contractConfig={contractConfig}
-        readContracts={readContracts}
-       
-       /> */}
-         </div>
-      {/* **************************************************************************end of debug ************************************/}
+          {/* **************************************************************************end of debug slide out ************************************/}
+          </div> 
         </Route>
         <Route path="/debug">
         
