@@ -87,8 +87,8 @@ function Swap({ selectedProvider, tokenListURI }) {
 
   const blockNumber = useBlockNumber(selectedProvider, 3000);
 
-  const signer = selectedProvider.getSigner();
-  const routerContract = new ethers.Contract(ROUTER_ADDRESS, IUniswapV2Router02ABI, signer);
+  // const signer = selectedProvider.getSigner();
+  const routerContract = new ethers.Contract(ROUTER_ADDRESS, IUniswapV2Router02ABI, selectedProvider); //remplacer signer par selectedProvider for testeing
 
   const _tokenListUri = tokenListURI || "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
 
@@ -244,7 +244,7 @@ function Swap({ selectedProvider, tokenListURI }) {
   const updateRouterAllowance = async newAllowance => {
     setApproving(true);
     try {
-      const tempContract = new ethers.Contract(tokens[tokenIn].address, erc20Abi, signer);
+      const tempContract = new ethers.Contract(tokens[tokenIn].address, erc20Abi, selectedProvider);
       const result = await makeCall("approve", tempContract, [ROUTER_ADDRESS, newAllowance]);
       console.log(result);
       setApproving(false);

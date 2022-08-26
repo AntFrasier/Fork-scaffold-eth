@@ -1,5 +1,5 @@
 // MY INFURA_ID, SWAP IN YOURS FROM https://infura.io/dashboard/ethereum
-export const INFURA_ID = "460f40a260564ac4a4f4b3fffb032dad";
+export const INFURA_ID = "f405489894904824a5c623aca904c78b";
 
 // MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
 export const ETHERSCAN_KEY = "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
@@ -26,6 +26,13 @@ export const NETWORKS = {
     color: "#ff8b9e",
     chainId: 1,
     rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    blockExplorer: "https://etherscan.io/",
+  },
+  mainnetLocal: { //ajout du node local
+    name: "mainnetLocal",
+    color: "#ff8b9e",
+    chainId: 1,
+    rpcUrl: `http://192.168.15.55:8545`,
     blockExplorer: "https://etherscan.io/",
   },
   kovan: {

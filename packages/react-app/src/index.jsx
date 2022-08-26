@@ -13,7 +13,8 @@ const themes = {
 
 const prevTheme = window.localStorage.getItem("theme");
 
-const subgraphUri = "http://localhost:8000/subgraphs/name/scaffold-eth/your-contract";
+// const subgraphUri = "http://localhost:8000/subgraphs/name/scaffold-eth/your-contract";
+const subgraphUri = "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2"; //uniswap V2 api subgraph
 
 const client = new ApolloClient({
   uri: subgraphUri,
