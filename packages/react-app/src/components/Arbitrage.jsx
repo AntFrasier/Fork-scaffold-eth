@@ -1,42 +1,26 @@
 import {
     Button,
     Card,
-    Descriptions,
-    Divider,
-    Drawer,
-    InputNumber,
-    Modal,
-    notification,
-    Row,
-    Select,
     Space,
     Cascader,
-    Input,
-    Tooltip,
-    Typography,
-    Menu,
   } from "antd";
 import React, { useEffect, useState } from "react";
-import { Link, Route, Switch, useLocation } from "react-router-dom";
-import { ethers } from "ethers";
-import { useBlockNumber, usePoller } from "eth-hooks";
-import { RetweetOutlined, SettingOutlined } from "@ant-design/icons";
-import { ChainId, Fetcher, Percent, Token, TokenAmount, Trade, WETH } from "@uniswap/sdk";
-import { abi as IUniswapV2Router02ABI } from "@uniswap/v2-periphery/build/IUniswapV2Router02.json";  
-import Column from "antd/lib/table/Column";
-import { useBot } from "../hooks";
+import { usePairList } from "../hooks";
 import BotResult from "./BotResult";
 
-  function Arbitrage (provider , signer) {
-    // const provider = props.provider;
-    // const signer = props.signer; 
+
+  function Arbitrage (provider , signer, graphQlUri) {
     const routerList = [
         {value: "uniswap",
         label : "uniswap",
-         address: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"},
+        address: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+        subGraphURI: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2"
+        },
          {value: "sushiSwap",
          label : "sushiSwap",
-         address: "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F"},
+         address: "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F",
+         subGraphURI: "https://api.thegraph.com/subgraphs/name/sushiswap/exchange"
+        },
     ]
     const tokenList = [
         {value: "Wrappe Eth",
@@ -48,21 +32,50 @@ import BotResult from "./BotResult";
     ]
     const [router, setRouter] = useState();
     const [token, setToken] = useState();
+    const [matchedPairsList, setMatchedPairsList] = useState();
     // const [prices, setPrices] = useState([0,0,0,0])
     const [dex1, setDex1] = useState("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D");
     const [dex2, setDex2] = useState("0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F");
     const [token1, setToken1] = useState("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2");
     const [token2, setToken2] = useState("0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0");
     const [startBot, setStartBot] = useState(false);
+    const dex1PairsList = usePairList(dex1[0].subGraphURI)
+    const dex2PairsList = usePairList(dex2[0].subGraphURI)
+    console.log ("dex1Pairs list ",dex1PairsList)
+    console.log ("dex2Pairs list ",dex2PairsList)
+    const tradeList = () => {
+      setMatchedPairsList([]);
+      function getArraysIntersection(a1,a2){
+        return  a1.filter(function(n) { return a2.indexOf(n.token0.symbol) !== -1;});
+    }
+       var intersectingColors=getArraysIntersection(dex1PairsList, dex2PairsList); //["red", "blue"]
+       console.log("intersection array : ", intersectingColors)
+    
+
+      // dex1PairsList.map( (pair) => {
+      //  let oldMachedPairsList = matchedPairsList 
+      //  let symbol1 = pair.token0.symbol
+      //  let matchPair = dex2PairsList.find( (pair) => {
+      //     console.log (pair.token0.symbol)
+      //     if (pair.token0.symbol == symbol1) return pair
+      //     })
+      //  console.log("match pair : ",matchPair)
+      //  let newPairsList = [...oldMachedPairsList, [pair, matchPair]]
+      //  console.log("newpairsList ",newPairsList)
+      //  setMatchedPairsList( newPairsList)
+      //   console.log("List matchedPairsList ",matchedPairsList)
+      // })
+    }
     // const [priceToShow,setPriceToShow] = useState([0,0,0,0]);
     // const prices = useBot(provider, dex1, dex2, token1, token2)
-    const onChangeDex1 = (value, token) => {
-        console.log("la value : ",value , token[0].address);
-        setDex1(token[0].address)
+    const onChangeDex1 = (value, dex) => {
+        console.log("la value dex1: ",value , dex);
+        setDex1(dex)
+        tradeList()
       };
-    const onChangeDex2 = (value, token) => {
-      console.log("la value : ",value , token[0].address);
-      setDex2(token[0].address)
+    const onChangeDex2 = (value, dex) => {
+      console.log("la value dex2: ",value , dex);
+      setDex2(dex)
     };
     const onChangeToken1 = (value, token) => {
         console.log("la value : ",value , token[0].address);
@@ -76,8 +89,11 @@ import BotResult from "./BotResult";
     console.log("the provider is : ",provider.provider)
     return (
         <div>
+          
+
           <Card 
             title = "Arbitrage between UniswapV2 router DEX">
+            
               <Space direction="horizontal">
                 {<Cascader options={routerList} placeholder="Dex1" onChange={onChangeDex1} style={{ width: 150 }} />}
                 {<Cascader options={routerList} placeholder="Dex2" onChange={onChangeDex2} style={{ width: 150 }} />}

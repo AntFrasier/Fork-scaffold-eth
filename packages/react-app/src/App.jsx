@@ -31,7 +31,7 @@ import externalContracts from "./contracts/external_contracts";
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { Home, ExampleUI, Hints, Subgraph } from "./views";
-import { useStaticJsonRPC, useTokenList } from "./hooks";
+import { useStaticJsonRPC } from "./hooks";
 
 const { ethers } = require("ethers");
 /*
@@ -81,8 +81,6 @@ function App(props) {
   const [address, setAddress] = useState();
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
   const location = useLocation();
-  const tokenList = useTokenList('', 1);
-  console.log("token list : ", tokenList)
   const targetNetwork = NETWORKS[selectedNetwork];
 
   // 🔭 block explorer URL
@@ -306,6 +304,7 @@ function App(props) {
         <Arbitrage 
         provider={localProvider}
         signer = {userSigner}
+        graphQlUri={props.subgraphUri}
         />
         </Route>
         <Route exact path="/debug">
