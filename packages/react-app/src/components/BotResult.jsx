@@ -22,7 +22,7 @@ function BotResult (props) {
     const token2 = props.token2;
     const token2Decimals = props.token2Decimals;
     const [prices, setPrices] = useState([0,0,0,0]);
-    // const blockNumber = useBlockNumber(provider);
+    const blockNumber = useBlockNumber(provider);
     
     var Router1 = new ethers.Contract ( dex1, IUniswapV2Router02ABI, provider );
     var Router2 = new ethers.Contract ( dex2, IUniswapV2Router02ABI, provider );
@@ -90,7 +90,7 @@ function BotResult (props) {
         console.log("provider dans bot : ", provider)
         console.log("router1 dans useefefct : ", Router1)
         run (Router1, Router2, token1,token1Decimals, token2, token2Decimals);
-    },[token1,token2]);
+    },[blockNumber,token1,token2]);
 
     console.log("router price 0 ; ",prices)
     console.log("the prices from useBot component : ", parseFloat(prices[0]));
