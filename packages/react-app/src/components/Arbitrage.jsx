@@ -32,46 +32,35 @@ import BotResult from "./BotResult";
     ]
     const [router, setRouter] = useState();
     const [token, setToken] = useState();
-    const [matchedPairsList, setMatchedPairsList] = useState();
+    const [matchedPairsList, setMatchedPairsList] = useState([]);
     // const [prices, setPrices] = useState([0,0,0,0])
     const [dex1, setDex1] = useState("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D");
     const [dex2, setDex2] = useState("0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F");
     const [token1, setToken1] = useState("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2");
     const [token2, setToken2] = useState("0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0");
     const [startBot, setStartBot] = useState(false);
-    const dex1PairsList = usePairList(dex1[0].subGraphURI)
+    const dex1PairsList = usePairList(dex1[0].subGraphURI) //hook use PairList return an array with all pairs from subgraph request
     const dex2PairsList = usePairList(dex2[0].subGraphURI)
-    console.log ("dex1Pairs list ",dex1PairsList)
-    console.log ("dex2Pairs list ",dex2PairsList)
-    const tradeList = () => {
-      setMatchedPairsList([]);
-      function getArraysIntersection(a1,a2){
-        return  a1.filter(function(n) { return a2.indexOf(n.token0.symbol) !== -1;});
-    }
-       var intersectingColors=getArraysIntersection(dex1PairsList, dex2PairsList); //["red", "blue"]
-       console.log("intersection array : ", intersectingColors)
-    
 
-      // dex1PairsList.map( (pair) => {
-      //  let oldMachedPairsList = matchedPairsList 
-      //  let symbol1 = pair.token0.symbol
-      //  let matchPair = dex2PairsList.find( (pair) => {
-      //     console.log (pair.token0.symbol)
-      //     if (pair.token0.symbol == symbol1) return pair
-      //     })
-      //  console.log("match pair : ",matchPair)
-      //  let newPairsList = [...oldMachedPairsList, [pair, matchPair]]
-      //  console.log("newpairsList ",newPairsList)
-      //  setMatchedPairsList( newPairsList)
-      //   console.log("List matchedPairsList ",matchedPairsList)
-      // })
+    const tradeList = () => { //fill the matchd pair list array with pairs that exist in both dexs
+      setMatchedPairsList([]);
+      var newPairsList = [];
+      if (dex1PairsList) {
+        dex1PairsList.forEach( (pair) => {
+          let symbol1 = pair.token0.symbol
+          let matchPair = dex2PairsList.find( (pair) => pair.token0.symbol === symbol1)
+          if (matchPair) { newPairsList = [...newPairsList, [pair, matchPair]] } 
+        })
+        setMatchedPairsList( newPairsList)
+        console.log("List matchedPairsList ",matchedPairsList)
+      }
     }
     // const [priceToShow,setPriceToShow] = useState([0,0,0,0]);
     // const prices = useBot(provider, dex1, dex2, token1, token2)
     const onChangeDex1 = (value, dex) => {
         console.log("la value dex1: ",value , dex);
         setDex1(dex)
-        tradeList()
+        
       };
     const onChangeDex2 = (value, dex) => {
       console.log("la value dex2: ",value , dex);
@@ -93,7 +82,7 @@ import BotResult from "./BotResult";
 
           <Card 
             title = "Arbitrage between UniswapV2 router DEX">
-            
+              <Button  tittle="MAJ" onClick={ () => tradeList() } >MAJ Trade List </Button>
               <Space direction="horizontal">
                 {<Cascader options={routerList} placeholder="Dex1" onChange={onChangeDex1} style={{ width: 150 }} />}
                 {<Cascader options={routerList} placeholder="Dex2" onChange={onChangeDex2} style={{ width: 150 }} />}
@@ -106,7 +95,13 @@ import BotResult from "./BotResult";
                     // setPriceToShow(prices);
                     // console.log("price to show : ",priceToShow[0])
                 }}>Run</Button>
+               
              </Space>
+             <ul>
+                  {matchedPairsList.map( pairs => (
+                    <li key={pairs[0].id}> {pairs[0].token0.name} / {pairs[0].token1.name}</li>
+                  ))}
+                </ul>
               { startBot ? <BotResult 
                 provider = {provider.provider}
                 dex1 = {dex1}

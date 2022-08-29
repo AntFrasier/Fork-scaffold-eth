@@ -10,7 +10,7 @@ export default function usePairList(graphQlUri) {
     const EXAMPLE_GRAPHQL = `
     {
       pairs(
-        where: {reserveUSD_gt: "1000000", volumeUSD_gt: "50000", token1 : "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" }
+        where: {reserveUSD_gt: "500000", token1 : "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" }
         orderBy: reserveUSD
         orderDirection: desc
       ) {
@@ -18,11 +18,13 @@ export default function usePairList(graphQlUri) {
         token0 {
           id
           symbol
+          name
           decimals
         }
         token1 {
           id
           symbol
+          name
           decimals
         }
         reserveUSD
@@ -43,7 +45,7 @@ export default function usePairList(graphQlUri) {
           }).then(response => response.json())
             .then(data => setPairs(data.data.pairs))
             .catch (e => console.log("Erreur Sa mere ",e));}
-            else {setPairs({})}
+            else {setPairs([])}
      
     },[graphQlUri])
 
