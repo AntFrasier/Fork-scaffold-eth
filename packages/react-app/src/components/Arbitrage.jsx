@@ -97,18 +97,19 @@ import BotResult from "./BotResult";
                 }}>Run</Button>
                
              </Space>
-             <ul>
+             <div style={{display: "flex"}}>
                   {matchedPairsList.map( pairs => (
-                    <li key={pairs[0].id}> {pairs[0].token0.name} / {pairs[0].token1.name}</li>
-                  ))}
-                </ul>
-              { startBot ? <BotResult 
-                provider = {provider.provider}
-                dex1 = {dex1}
-                dex2={dex2}
-                token1={token1}
-                token2={token2}
-              /> : <div>The bot is stoped</div>}
+                    <li key={pairs[0].id}> {pairs[0].token0.name} / {pairs[0].token1.name}
+                      {startBot ? <BotResult 
+                        provider = {provider.provider}
+                        dex1 = {routerList[0].address}
+                        dex2={routerList[1].address}
+                        token1={pairs[0].token0.id}
+                        token2={pairs[0].token1.id}
+                      /> : <p key={pairs[1].id}>bot is stoped !</p>}
+                    </li>))}
+              </div>
+              
             </Card>
      
         </div>
