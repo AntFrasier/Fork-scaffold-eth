@@ -98,13 +98,13 @@ function BotResult (props) {
     return (
         <div>
             <Card title ="dex1 price">
-                <div>{parseFloat(prices[0])}</div>
-                <div>{parseFloat(prices[1])}</div>
+                <div>{ethers.utils.formatUnits(prices[0], token2Decimals)}</div>
+                <div>{ethers.utils.formatUnits(prices[1], token1Decimals)}</div>
                 <div>{diff} %</div>
             </Card>
             <Card title ="dex2 price">
-                 <div>{parseFloat(prices[2])}</div>
-                 <div>{parseFloat(prices[3])}</div>
+                 <div>{ethers.utils.formatUnits(prices[2], token2Decimals)}</div>
+                 <div>{ethers.utils.formatUnits(prices[3], token1Decimals)}</div>
             </Card>
         </div>
       );
