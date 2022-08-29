@@ -18,7 +18,9 @@ function BotResult (props) {
     const dex1 = props.dex1;
     const dex2 = props.dex2;
     const token1 = props.token1;
+    const token1Decimals = props.token1Decimals;
     const token2 = props.token2;
+    const token2Decimals = props.token2Decimals;
     const [prices, setPrices] = useState([0,0,0,0]);
     // const blockNumber = useBlockNumber(provider);
     
@@ -48,11 +50,11 @@ function BotResult (props) {
     //         }
     //       }
 
-    async function getPrice (token0, token1, Router1, Router2) { //should have token decimals to replace parseEther by parseUnit
+    async function getPrice (token0, token0Decimals, token1, token1Decimals, Router1, Router2) { //should have token decimals to replace parseEther by parseUnit
         // console.log("router dans getPrice : ", Router)
         try {
             // let amount = ethers.utils.parseUnits(amount, token0Decimals)
-            let amount = ethers.utils.parseEther("1");//need to calculate the amoutn to be a percentage of max reserves and token decimal !
+            let amount = ethers.utils.parseUnits("1", token0Decimals);//need to calculate the amoutn to be a percentage of max reserves and token decimal !
             let price = await Router1.getAmountsOut(amount, [token0, token1]);
             let testPrice = await price
             console.log("Router1 price :",parseFloat(testPrice[1]))
@@ -68,15 +70,15 @@ function BotResult (props) {
             console.log("router",e);
           }}
     
-    const run = async (Router1, Router2, token1, token2) => {
+    const run = async (Router1, Router2, token1,token1Decimals, token2, token2Decimals) => {
         
-        const token1ForToken2OnDex1 = await getPrice(token1, token2, Router1, Router2);
+        const token1ForToken2OnDex1 = await getPrice(token1,token1Decimals, token2,token2Decimals, Router1, Router2);
         const a = await token1ForToken2OnDex1
-        const token2ForToken1OnDex1 = await getPrice(token2, token1, Router1,Router2);
+        const token2ForToken1OnDex1 = await getPrice(token2,token2Decimals, token1,token1Decimals, Router1,Router2);
         const b = await token2ForToken1OnDex1
-        const token1ForToken2OnDex2 = await getPrice(token1, token2, Router2, Router1);
+        const token1ForToken2OnDex2 = await getPrice(token1,token1Decimals, token2,token2Decimals, Router2, Router1);
         const c = await token1ForToken2OnDex2
-        const token2ForToken1OnDex2 = await getPrice(token2, token1, Router2, Router1);
+        const token2ForToken1OnDex2 = await getPrice(token2,token2Decimals, token1,token1Decimals, Router2, Router1);
         const d = await token2ForToken1OnDex2
         
         let newPrices = [a,b,c,d]
@@ -87,7 +89,7 @@ function BotResult (props) {
     useEffect(() => {
         console.log("provider dans bot : ", provider)
         console.log("router1 dans useefefct : ", Router1)
-        run (Router1, Router2, token1,token2);
+        run (Router1, Router2, token1,token1Decimals, token2, token2Decimals);
     },[token1,token2]);
 
     console.log("router price 0 ; ",prices)
@@ -96,7 +98,7 @@ function BotResult (props) {
     return (
         <div>
             <Card title ="dex1 price">
-                <div>{ethers.utils.formatUnits(prices[0],18)}</div>
+                <div>{parseFloat(prices[0])}</div>
                 <div>{parseFloat(prices[1])}</div>
                 <div>{diff} %</div>
             </Card>

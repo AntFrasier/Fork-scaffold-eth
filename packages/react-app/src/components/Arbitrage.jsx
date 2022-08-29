@@ -51,6 +51,7 @@ import BotResult from "./BotResult";
           let matchPair = dex2PairsList.find( (pair) => pair.token0.symbol === symbol1)
           if (matchPair) { newPairsList = [...newPairsList, [pair, matchPair]] } 
         })
+        console.log()
         setMatchedPairsList( newPairsList)
         console.log("List matchedPairsList ",matchedPairsList)
       }
@@ -105,7 +106,9 @@ import BotResult from "./BotResult";
                         dex1 = {routerList[0].address}
                         dex2={routerList[1].address}
                         token1={pairs[0].token0.id}
+                        token1Decimals={pairs[0].token0.decimals}
                         token2={pairs[0].token1.id}
+                        token2Decimals={pairs[0].token1.decimals}
                       /> : <p key={pairs[1].id}>bot is stoped !</p>}
                     </li>))}
               </div>
