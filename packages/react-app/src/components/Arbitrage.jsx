@@ -30,8 +30,6 @@ import BotResult from "./BotResult";
           label: "Matic",
           address: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0"},
     ]
-    const [router, setRouter] = useState();
-    const [token, setToken] = useState();
     const [matchedPairsList, setMatchedPairsList] = useState([]);
     // const [prices, setPrices] = useState([0,0,0,0])
     const [dex1, setDex1] = useState("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D");
@@ -39,6 +37,7 @@ import BotResult from "./BotResult";
     const [token1, setToken1] = useState("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2");
     const [token2, setToken2] = useState("0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0");
     const [startBot, setStartBot] = useState(false);
+    const [loading, setLoading] = useState(false)
     const dex1PairsList = usePairList(dex1[0].subGraphURI) //hook use PairList return an array with all pairs from subgraph request
     const dex2PairsList = usePairList(dex2[0].subGraphURI)
 
@@ -61,6 +60,11 @@ import BotResult from "./BotResult";
     const onChangeDex1 = (value, dex) => {
         console.log("la value dex1: ",value , dex);
         setDex1(dex)
+        setLoading(true)
+        while (matchedPairsList === []){
+          console.log("hum hum")
+        }
+        setLoading(false)
         
       };
     const onChangeDex2 = (value, dex) => {
@@ -74,6 +78,8 @@ import BotResult from "./BotResult";
     const onChangeToken2 = (value, token) => {
         console.log("la value : ",value , token[0].address);
         setToken2(token[0].address)
+  
+
     };
     
     console.log("the provider is : ",provider.provider)
@@ -83,7 +89,7 @@ import BotResult from "./BotResult";
 
           <Card 
             title = "Arbitrage between UniswapV2 router DEX">
-              <Button  tittle="MAJ" onClick={ () => tradeList() } >MAJ Trade List </Button>
+              <Button  tittle="MAJ" loading = {loading} onClick={ () => tradeList() } >MAJ Trade List </Button>
               <Space direction="horizontal">
                 {<Cascader options={routerList} placeholder="Dex1" onChange={onChangeDex1} style={{ width: 150 }} />}
                 {<Cascader options={routerList} placeholder="Dex2" onChange={onChangeDex2} style={{ width: 150 }} />}
@@ -91,26 +97,22 @@ import BotResult from "./BotResult";
                 {<Cascader options={tokenList} placeholder="Token2" onChange={onChangeToken2} style={{ width: 150 }} />}
                 <Button 
                 title="run"
+                
                 onClick={ () => {
                     setStartBot(!startBot)
-                    // setPriceToShow(prices);
-                    // console.log("price to show : ",priceToShow[0])
                 }}>Run</Button>
                
              </Space>
-             <div style={{display: "flex"}}>
+             <div style={{display: "flex", direction:"row", flexWrap: "wrap" }}>
                   {matchedPairsList.map( pairs => (
-                    <li key={pairs[0].id}> {pairs[0].token0.name} / {pairs[0].token1.name}
+                      <div style={{marginRight:"15px", marginTop:"15px", width:"350px"}}>
                       {startBot ? <BotResult 
                         provider = {provider.provider}
-                        dex1 = {routerList[0].address}
-                        dex2={routerList[1].address}
-                        token1={pairs[0].token0.id}
-                        token1Decimals={pairs[0].token0.decimals}
-                        token2={pairs[0].token1.id}
-                        token2Decimals={pairs[0].token1.decimals}
+                        dex1= {routerList[0].address}
+                        dex2= {routerList[1].address}
+                        pairs = {pairs}
                       /> : <p key={pairs[1].id}>bot is stoped !</p>}
-                    </li>))}
+                    </div>))}
               </div>
               
             </Card>

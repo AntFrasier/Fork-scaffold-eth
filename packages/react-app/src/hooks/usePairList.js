@@ -10,7 +10,7 @@ export default function usePairList(graphQlUri) {
     const EXAMPLE_GRAPHQL = `
     {
       pairs(
-        where: {reserveUSD_gt: "500000", token1 : "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" }
+        where: {reserveUSD_gt: "1000000", token1 : "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" }
         orderBy: reserveUSD
         orderDirection: desc
       ) {

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Card } from "antd";
+import { Card, Space } from "antd";
 import { ethers } from "ethers";
 import { useBlockNumber } from "eth-hooks";
-import { ChainId, Fetcher, Percent, Token, TokenAmount, Trade, WETH } from "@uniswap/sdk";
+// import { ChainId, Fetcher, Percent, Token, TokenAmount, Trade, WETH } from "@uniswap/sdk";
 import { abi as IUniswapV2Router02ABI } from "@uniswap/v2-periphery/build/IUniswapV2Router02.json";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
+
+import Address from "./Address"
+
 
 /**
   ~ What it does? ~
@@ -14,19 +16,21 @@ import { ConsoleSqlOutlined } from "@ant-design/icons";
 **/
 
 function BotResult (props) {
+    console.log ("props ", props)
     const provider = props.provider;
     const dex1 = props.dex1;
     const dex2 = props.dex2;
-    const token1 = props.token1;
-    const token1Decimals = props.token1Decimals;
-    const token2 = props.token2;
-    const token2Decimals = props.token2Decimals;
+    const token0 = props.pairs[0].token0.id;
+    const token0Decimals = props.pairs[0].token0.decimals;
+    const token1 = props.pairs[0].token1.id;
+    const token1Decimals = props.pairs[0].token1.decimals;
     const [prices, setPrices] = useState([0,0,0,0]);
     const blockNumber = useBlockNumber(provider);
     
     var Router1 = new ethers.Contract ( dex1, IUniswapV2Router02ABI, provider );
     var Router2 = new ethers.Contract ( dex2, IUniswapV2Router02ABI, provider );
     console.log("router1 dans main : ", Router1)
+    console.log("router2 dans main : ", Router1)
 
     // const checkPrice = async (_tokenBorrow, _amount, _otherToken, _dex1Token0IsWbnb,_startWith) => {
     //     //before sending the transaction wee would like to be sure that the outpout amount of dex2 will be enough to rembourse the loan
@@ -62,7 +66,7 @@ function BotResult (props) {
             let testTrade = await trade
             console.log("Router2 Trade :",testTrade)
             let diff = parseFloat(testPrice[1]) - parseFloat(testTrade[0])
-            console.log ("router price trade diff : ", parseFloat(testPrice[1]), parseFloat(testTrade [1]), diff)
+            console.log ("router price trade diff : ", parseFloat(testPrice[1]), parseFloat(testTrade [0]), diff)
             // console.log("the retunr of getamout : ",ethers.utils.formatEther(price[1]));
             return (testPrice[1]);
          }
@@ -70,15 +74,15 @@ function BotResult (props) {
             console.log("router",e);
           }}
     
-    const run = async (Router1, Router2, token1,token1Decimals, token2, token2Decimals) => {
+    const run = async (Router1, Router2, token0,token0Decimals, token1, token1Decimals) => {
         
-        const token1ForToken2OnDex1 = await getPrice(token1,token1Decimals, token2,token2Decimals, Router1, Router2);
+        const token1ForToken2OnDex1 = await getPrice(token0,token0Decimals, token1,token1Decimals, Router1, Router2);
         const a = await token1ForToken2OnDex1
-        const token2ForToken1OnDex1 = await getPrice(token2,token2Decimals, token1,token1Decimals, Router1,Router2);
+        const token2ForToken1OnDex1 = await getPrice(token1,token1Decimals, token0,token0Decimals, Router1,Router2);
         const b = await token2ForToken1OnDex1
-        const token1ForToken2OnDex2 = await getPrice(token1,token1Decimals, token2,token2Decimals, Router2, Router1);
+        const token1ForToken2OnDex2 = await getPrice(token0,token0Decimals, token1,token1Decimals, Router2, Router1);
         const c = await token1ForToken2OnDex2
-        const token2ForToken1OnDex2 = await getPrice(token2,token2Decimals, token1,token1Decimals, Router2, Router1);
+        const token2ForToken1OnDex2 = await getPrice(token1,token1Decimals, token0,token0Decimals, Router2, Router1);
         const d = await token2ForToken1OnDex2
         
         let newPrices = [a,b,c,d]
@@ -89,22 +93,27 @@ function BotResult (props) {
     useEffect(() => {
         console.log("provider dans bot : ", provider)
         console.log("router1 dans useefefct : ", Router1)
-        run (Router1, Router2, token1,token1Decimals, token2, token2Decimals);
-    },[blockNumber,token1,token2]);
+        run (Router1, Router2, token0,token0Decimals, token1, token1Decimals);
+    },[blockNumber,token0,token1]);
 
     console.log("router price 0 ; ",prices)
     console.log("the prices from useBot component : ", parseFloat(prices[0]));
     const diff = ((parseFloat(prices[0])) -  parseFloat(prices[2])) / parseFloat(prices[2]) * 100 ;
     return (
         <div>
-            <Card title ="dex1 price">
-                <div>{ethers.utils.formatUnits(prices[0], token2Decimals)}</div>
-                <div>{ethers.utils.formatUnits(prices[1], token1Decimals)}</div>
-                <div>{diff} %</div>
-            </Card>
-            <Card title ="dex2 price">
-                 <div>{ethers.utils.formatUnits(prices[2], token2Decimals)}</div>
-                 <div>{ethers.utils.formatUnits(prices[3], token1Decimals)}</div>
+            <Card title ={`${props.pairs[0].token0.symbol} / ${props.pairs[0].token1.symbol}`}>
+            <h5> Dex1 Pair <Address minimized address={props.pairs[0].id} /> </h5>
+            <Space direction="horizontal">
+                <div>{parseFloat(prices[0])}</div>
+                <div>{parseFloat(prices[1])}</div>
+                <div>{diff.toFixed(2)} %</div>
+            </Space>
+            <h5> Dex2 Pair <Address minimized address={props.pairs[1].id} /> </h5>
+            <Space direction="horizontal">
+            
+                 <div>{parseFloat(prices[2])}</div>
+                 <div>{parseFloat(prices[3])}</div>
+            </Space>
             </Card>
         </div>
       );
